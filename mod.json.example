@@ -1,0 +1,37 @@
+{
+  "id": "my_pack",
+  "name": "My Pack",
+  "description": "What this pack does.",
+  "license": "MIT",
+  "authors": ["you"],
+  "homepage": "https://modrinth.com/datapack/my_pack",
+  "sources": "https://github.com/you/my_pack",
+  "issues": "https://github.com/you/my_pack/issues",
+  "icon": "pack.png",
+
+  "main_mod": false,
+
+  "modrinth": {
+    "project_id": "REPLACE_ME",
+    "game_versions": ["26.1.x"],
+    "channel": "release",
+    "environment": "server_only_client_optional"
+  },
+
+  "pack": {
+    "min_format": 101,
+    "max_format": 101,
+    "description": "My Pack"
+  },
+
+  "resource_pack": {
+    "present": false,
+    "required": false
+  },
+
+  "library": {
+    "id": "arbiterlib",
+    "modrinth_project_id": "aHzaVmyo",
+    "min_version": 6
+  }
+}

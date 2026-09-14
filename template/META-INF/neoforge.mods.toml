@@ -1,0 +1,14 @@
+modLoader = "lowcodefml"
+loaderVersion = "[1,)"
+license = "{{license}}"
+issueTrackerURL = "{{issues}}"
+
+[[mods]]
+modId = "{{id}}"
+version = "{{version}}"
+displayName = "{{name}}"
+description = '''{{description}}'''
+authors = "{{authors_csv}}"
+displayURL = "{{homepage}}"
+logoFile = "{{icon}}"
+{{neoforge_dependencies}}

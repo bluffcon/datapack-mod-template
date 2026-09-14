@@ -1,0 +1,102 @@
+name: Package and publish
+
+on:
+  workflow_call:
+    secrets:
+      MODRINTH_TOKEN:
+        required: true
+    inputs:
+      version_override:
+        type: string
+        required: false
+        default: ""
+      release_title:
+        type: string
+        required: false
+        default: ""
+      template_repository:
+        type: string
+        required: false
+        default: bluffcon/datapack-mod-template
+
+  workflow_dispatch:
+    inputs:
+      version_override:
+        description: "Version if you are not using a !r7 commit (e.g. r7)"
+        required: false
+        default: ""
+      release_title:
+        description: "Release title"
+        required: false
+        default: ""
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout pack
+        uses: actions/checkout@v4
+        with:
+          path: pack
+
+      - name: Checkout datapack-mod-template
+        uses: actions/checkout@v4
+        with:
+          repository: ${{ inputs.template_repository || 'bluffcon/datapack-mod-template' }}
+          path: tmpl
+
+      - name: Package
+        id: pkg
+        env:
+          CONTENT_DIR: pack
+          TEMPLATE_DIR: tmpl/template
+          DIST_DIR: dist
+          STAGE_DIR: stage
+          COMMIT_MESSAGE: ${{ github.event.head_commit.message }}
+          VERSION_OVERRIDE: ${{ inputs.version_override }}
+          RELEASE_TITLE: ${{ inputs.release_title }}
+        run: python3 tmpl/scripts/package.py
+
+      - name: GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ steps.pkg.outputs.version }}
+          name: "${{ steps.pkg.outputs.version }} - ${{ steps.pkg.outputs.title }}"
+          files: dist/*
+          body: |
+            ${{ steps.pkg.outputs.title }}
+
+            Commit: ${{ github.sha }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Publish datapack to Modrinth
+        uses: cloudnode-pro/modrinth-publish@v2
+        with:
+          token: ${{ secrets.MODRINTH_TOKEN }}
+          project: ${{ steps.pkg.outputs.project_id }}
+          version: ${{ steps.pkg.outputs.version }}
+          name: ${{ steps.pkg.outputs.title }}
+          loaders: ${{ steps.pkg.outputs.loaders_datapack }}
+          game-versions: ${{ steps.pkg.outputs.game_versions }}
+          files: ${{ steps.pkg.outputs.files_datapack }}
+          primary-file: ${{ steps.pkg.outputs.primary_datapack }}
+          file-types: ${{ steps.pkg.outputs.file_types }}
+          dependencies: ${{ steps.pkg.outputs.dependencies }}
+          channel: ${{ steps.pkg.outputs.channel }}
+
+      - name: Publish mod jar to Modrinth
+        uses: cloudnode-pro/modrinth-publish@v2
+        with:
+          token: ${{ secrets.MODRINTH_TOKEN }}
+          project: ${{ steps.pkg.outputs.project_id }}
+          version: ${{ steps.pkg.outputs.jar_version }}
+          name: ${{ steps.pkg.outputs.title }} (mod)
+          loaders: ${{ steps.pkg.outputs.loaders_mod }}
+          game-versions: ${{ steps.pkg.outputs.game_versions }}
+          files: ${{ steps.pkg.outputs.jar }}
+          dependencies: ${{ steps.pkg.outputs.dependencies }}
+          channel: ${{ steps.pkg.outputs.channel }}

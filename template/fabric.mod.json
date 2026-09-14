@@ -1,0 +1,17 @@
+{
+  "schemaVersion": 1,
+  "id": "{{id}}",
+  "version": "{{version}}",
+  "name": "{{name}}",
+  "description": "{{description}}",
+  "authors": {{authors_json}},
+  "contact": {
+    "homepage": "{{homepage}}",
+    "sources": "{{sources}}",
+    "issues": "{{issues}}"
+  },
+  "license": "{{license}}",
+  "icon": "{{icon}}",
+  "environment": "*",
+  "depends": {{fabric_depends}}
+}
