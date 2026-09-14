@@ -425,7 +425,7 @@ def main() -> None:
         loaders_mod=json.dumps(["fabric", "neoforge"]),
         dependencies=json.dumps(deps),
         main_mod="true" if main_mod else "false",
-        jar_version=f"{mod_version}+mod",
+        jar_version=f"{pack_version} mod",
     )
     print(f"version={pack_version}")
     print(f"mod_version={mod_version}")
