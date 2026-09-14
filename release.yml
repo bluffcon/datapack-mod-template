@@ -25,7 +25,7 @@ jobs:
     if: >-
       github.event_name == 'workflow_dispatch' ||
       startsWith(github.event.head_commit.message, '!')
-    uses: bluffcon/pack-mod-template/.github/workflows/release.yml@main
+    uses: bluffcon/datapack-mod-template/.github/workflows/release.yml@main
     secrets:
       MODRINTH_TOKEN: ${{ secrets.MODRINTH_TOKEN }}
     with:
