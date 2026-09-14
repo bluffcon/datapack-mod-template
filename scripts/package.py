@@ -138,6 +138,16 @@ def write_github_output(**kwargs: str) -> None:
                 fh.write(f"{key}={value}\n")
 
 
+def workspace_rel(path: Path) -> str:
+    """Path relative to GITHUB_WORKSPACE so Docker-based actions can open it."""
+    workspace = Path(os.environ.get("GITHUB_WORKSPACE", ".")).resolve()
+    resolved = path.resolve()
+    try:
+        return resolved.relative_to(workspace).as_posix()
+    except ValueError:
+        return resolved.as_posix()
+
+
 def fabric_depends(
     mod: dict, library: dict | None, pin_mc: bool, lib_min: int | None
 ) -> dict:
@@ -376,9 +386,11 @@ def main() -> None:
 
     rp_required = bool(rp.get("required", True))
     file_types = ""
-    files_datapack = str(datapack_zip)
+    # Relative paths only — modrinth-publish runs in Docker and cannot see
+    # host absolute paths like /home/runner/work/.../dist/...
+    files_datapack = workspace_rel(datapack_zip)
     if rp_zip:
-        files_datapack += f"\n{rp_zip}"
+        files_datapack += f"\n{workspace_rel(rp_zip)}"
         kind = (
             "required-resource-pack"
             if rp_required
@@ -403,9 +415,9 @@ def main() -> None:
         channel=channel,
         environment=mr.get("environment") or "",
         game_versions="\n".join(game_versions),
-        datapack_zip=str(datapack_zip),
-        resource_zip=str(rp_zip) if rp_zip else "",
-        jar=str(jar),
+        datapack_zip=workspace_rel(datapack_zip),
+        resource_zip=workspace_rel(rp_zip) if rp_zip else "",
+        jar=workspace_rel(jar),
         files_datapack=files_datapack,
         file_types=file_types,
         primary_datapack=datapack_zip.name,
