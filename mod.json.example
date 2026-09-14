@@ -18,12 +18,6 @@
     "environment": "server_only_client_optional"
   },
 
-  "pack": {
-    "min_format": 101,
-    "max_format": 101,
-    "description": "My Pack"
-  },
-
   "resource_pack": {
     "present": false,
     "required": false
